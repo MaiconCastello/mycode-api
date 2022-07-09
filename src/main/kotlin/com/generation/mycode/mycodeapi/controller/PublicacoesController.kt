@@ -2,6 +2,7 @@ package com.generation.mycode.mycodeapi.controller
 
 import com.generation.mycode.mycodeapi.entities.Publicacoes
 import com.generation.mycode.mycodeapi.model.Comentario
+import com.generation.mycode.mycodeapi.model.Reacao
 import com.generation.mycode.mycodeapi.repository.PublicacoesRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
@@ -58,6 +59,14 @@ class PublicacoesController {
         return ResponseEntity.ok(repository.save(publicacoes))
     }
 
+    @PutMapping("/comentarios/{id}")
+    fun createComentarios(@PathVariable id: Long, @RequestBody novoComentario: Comentario) : ResponseEntity<Publicacoes> {
+        val publicacoes = repository.findById(id).orElseThrow { EntityNotFoundException() }
+       publicacoes.comentario.add(novoComentario)
+            return ResponseEntity.ok(repository.save(publicacoes))
+
+    }
+
     @PutMapping("/comentarios/{id}/{id2}")
     fun updateComentarios(@PathVariable id: Long, @PathVariable id2: Long, @RequestBody novoComentario: Comentario) : ResponseEntity<Publicacoes> {
         val publicacoes = repository.findById(id).orElseThrow { EntityNotFoundException() }
@@ -94,4 +103,70 @@ class PublicacoesController {
         repository.save(publicacoes)
         return ResponseEntity<Void>(HttpStatus.OK)
     }
+
+    @PutMapping("/reacao/{id}")
+    fun createReacao(@PathVariable id: Long, @RequestBody novoReacao: Reacao) : ResponseEntity<Publicacoes> {
+        val publicacoes = repository.findById(id).orElseThrow { EntityNotFoundException() }
+        publicacoes.reacao.add(novoReacao)
+        if (novoReacao.reacao == "good"){
+            publicacoes.good++
+        }else{
+            if (novoReacao.reacao == "bad"){
+                publicacoes.bad++
+            }
+        }
+        return ResponseEntity.ok(repository.save(publicacoes))
+
+    }
+    @PutMapping("/reacao/{id}/{id2}")
+    fun updateReacao(@PathVariable id: Long, @PathVariable id2: Long, @RequestBody novaReacao: Reacao) : ResponseEntity<Publicacoes> {
+        val publicacoes = repository.findById(id).orElseThrow { EntityNotFoundException() }
+        lateinit var controle: String
+        publicacoes.apply {
+            this.reacao.forEach {
+                if (it.id == id2) {
+                    controle = it.reacao
+                    it.reacao = novaReacao.reacao
+                }
+            }
+            when(novaReacao.reacao){
+
+                "good" -> {
+                    when(controle){
+                        "good" ->{}
+                        "bad" ->{
+                            publicacoes.good++
+                            publicacoes.bad--
+                        }
+                        "" ->{
+                            publicacoes.good++
+                        }
+                    }
+                }
+                "bad" -> {
+                    when(controle){
+                        "good" ->{
+                            publicacoes.good--
+                            publicacoes.bad++
+                        }
+                        "bad" ->{}
+                        "" ->{
+                            publicacoes.bad++
+                        }
+                    }
+
+                }
+                "" -> {
+                    when(controle){
+                        "good" ->{publicacoes.good--}
+                        "bad" ->{publicacoes.bad--}
+                        "" ->{}
+                    }
+                }
+            }
+
+            return ResponseEntity.ok(repository.save(publicacoes))
+        }
+    }
+
 }
