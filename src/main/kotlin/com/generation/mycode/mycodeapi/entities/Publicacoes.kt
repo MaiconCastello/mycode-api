@@ -1,11 +1,9 @@
 package com.generation.mycode.mycodeapi.entities
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.generation.mycode.mycodeapi.model.Comentario
 import com.generation.mycode.mycodeapi.model.Reacao
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
@@ -22,14 +20,23 @@ class Publicacoes(
     @field:Size(min =3, max =1000)
     var conteudo: String,
 
+    var imagem: String,
+
     @field:NotNull
     var usuario: String,
 
     var good: Int,
     var bad: Int,
-    @kotlin.jvm.Transient
-    val comentario: List<Comentario>,
-    @kotlin.jvm.Transient
-    val reacao: List<Reacao>
+
+
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JsonIgnoreProperties("publicacoes")
+    var comentario: MutableList<Comentario>,
+
+
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JsonIgnoreProperties("publicacoes")
+    val reacao: MutableList<Reacao>
+
 ) {
 }

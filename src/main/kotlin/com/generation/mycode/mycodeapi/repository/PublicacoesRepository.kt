@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 interface PublicacoesRepository: JpaRepository<Publicacoes, Long> {
 
     fun findAllByCategoriaContainingIgnoreCase (categoria: String) : List<Publicacoes>
+    fun findAllByUsuarioContainingIgnoreCase (usuario: String) : List<Publicacoes>
 }
