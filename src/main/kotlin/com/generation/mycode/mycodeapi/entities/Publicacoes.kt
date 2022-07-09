@@ -27,7 +27,9 @@ class Publicacoes(
 
     var good: Int,
     var bad: Int,
-    var reacao: MutableList<Reacao>,
-    var comentario: MutableList<Comentario>
+    @kotlin.jvm.Transient
+    val comentario: List<Comentario>,
+    @kotlin.jvm.Transient
+    val reacao: List<Reacao>
 ) {
 }
