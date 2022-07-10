@@ -25,10 +25,12 @@ class PublicacoesController {
     lateinit var repository: PublicacoesRepository
 
     @PostMapping
-    fun create (@RequestBody publicacoes: Publicacoes): Publicacoes = repository.save(publicacoes)
+    fun create (@RequestBody publicacoes: Publicacoes): ResponseEntity<Publicacoes> =
+        ResponseEntity.ok(repository.save(publicacoes))
 
     @GetMapping
-    fun getAll() : List<Publicacoes> = repository.findAll()
+    fun getAll() : ResponseEntity<List<Publicacoes>> =
+        ResponseEntity.ok(repository.findAll())
 
     @GetMapping("/{id}")
     fun getById(@PathVariable id: Long) : ResponseEntity<Publicacoes> =
